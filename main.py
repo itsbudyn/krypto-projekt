@@ -14,6 +14,7 @@ class Party:
 
         self.opponent_public_key=None
         self.opponent_identity=None
+        self.opponent_identity_mac=None
 
     def generateSharedKey(self):
         self.shared_key=self.private_key.exchange(self.opponent_public_key)
