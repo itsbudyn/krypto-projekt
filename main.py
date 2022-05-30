@@ -29,8 +29,8 @@ class Party:
         KLUCZ PUB. PRZECIWNY:\t{self.opponent_public_key}"""
         return string
 
-A=Party("A")
-B=Party("B")
+A=Party("Alice")
+B=Party("Bob")
 
 # KROK 1 = A WYSYŁA g^x DO B
 B.opponent_public_key=A.public_key
