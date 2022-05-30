@@ -2,21 +2,15 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import dh
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
-parameters = dh.generate_parameters(generator=2, key_size=512)
+class Party:
+    def __init__(self,identity):
+        self.identity=identity
+        self.private_key=parameters.generate_private_key()
+        self.public_key=self.private_key.public_key()
 
-server_private_key = parameters.generate_private_key()
-peer_private_key = parameters.generate_private_key()
+        self.shared_key=None
 
-server_public_key = server_private_key.public_key()
-peer_public_key = peer_private_key.public_key()
+        self.opponent_public_key=None
 
-shared_key_a = server_private_key.exchange(peer_public_key=peer_public_key)
-shared_key_b = peer_private_key.exchange(server_public_key)
-
-print("SERVER PRIVATE KEY",server_private_key)
-print("SERVER PUBLIC KEY",server_public_key)
-print("PEER PRIVATE KEY",peer_private_key)
-print("PEER PUBLIC KEY",peer_public_key)
-print("SHARED KEY A",shared_key_a)
-print("SHARED KEY B",shared_key_b)
-print("ARE SHARED KEYS EQUAL:",shared_key_a==shared_key_b)
+    def generateSharedKey(self):
+        self.shared_key=self.private_key.exchange(self.opponent_public_key)
