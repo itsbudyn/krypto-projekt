@@ -13,6 +13,7 @@ class Party:
         self.shared_key=None
 
         self.opponent_public_key=None
+        self.opponent_identity=None
 
     def generateSharedKey(self):
         self.shared_key=self.private_key.exchange(self.opponent_public_key)
@@ -27,15 +28,14 @@ class Party:
         KLUCZ PUB. PRZECIWNY:\t{self.opponent_public_key}"""
         return string
 
-def exchangePublicKeys(peer_a:Party,peer_b:Party):
-    peer_a.opponent_public_key=peer_b.public_key
-    peer_b.opponent_public_key=peer_a.public_key
-
 A=Party("A")
 B=Party("B")
 
-exchangePublicKeys(A,B)
-A.generateSharedKey()
-B.generateSharedKey()
+# KROK 1 = A WYSYŁA g^x DO B
+B.opponent_public_key=A.public_key
+
+# KROK 2
+A.opponent_public_key=B.public_key
+A.opponent_identity=B.identity
 
 print(A.shared_key==B.shared_key)
