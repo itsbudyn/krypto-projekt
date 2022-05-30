@@ -63,7 +63,7 @@ B.opponent_identity_mac = A.identity_mac   # Swój MAC ze swojej tożsamości
 print("B sprawdzi teraz MAC z A")
 B.verifyOpposingMAC()
 
+print("Zgodność współdzielonych kluczy:",A.shared_key==B.shared_key)
+
 # serializacja kluczy - to robiłem jak się siłowałem z podpisami cyfrowymi
 A_private_key_serialized=A.private_key.private_bytes(encoding=serialization.Encoding.PEM,format=serialization.PrivateFormat.PKCS8,encryption_algorithm=serialization.NoEncryption())
-
-print("Zgodność współdzielonych kluczy:",A.shared_key==B.shared_key)
