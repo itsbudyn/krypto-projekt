@@ -21,14 +21,6 @@ class Party:
     def generateSharedKey(self):
         self.shared_key=self.private_key.exchange(self.opponent_public_key)
 
-    def generateDerivedKey(self):
-        self.derived_key=HKDF(
-            algorithm=hashes.SHA256(),
-            length=32,
-            salt=None,
-            info=b'handshake data'
-        ).derive(self.shared_key)
-
     def __str__(self):
         string=f"""INFORMACJE O {self.identity}
         KLUCZ PRYWATNY: \t{self.private_key}
@@ -51,9 +43,6 @@ A.opponent_identity=B.identity
 
 A.generateSharedKey()
 B.generateSharedKey()
-
-A.generateDerivedKey()
-B.generateDerivedKey()
 
 print(A.shared_key==B.shared_key)
 print(A.derived_key==B.derived_key)
