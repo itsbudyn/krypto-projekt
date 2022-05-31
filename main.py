@@ -1,6 +1,5 @@
 from cryptography.hazmat.primitives import hashes, hmac, serialization
 from cryptography.hazmat.primitives.asymmetric import dh, dsa
-from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
 parameters = dh.generate_parameters(generator=2, key_size=512)
 
