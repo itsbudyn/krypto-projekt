@@ -1,4 +1,4 @@
-from cryptography.hazmat.primitives import hashes, serialization, hmac
+from cryptography.hazmat.primitives import hashes, hmac
 from cryptography.hazmat.primitives.asymmetric import dh
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
@@ -64,6 +64,3 @@ print("B sprawdzi teraz MAC z A")
 B.verifyOpposingMAC()
 
 print("Zgodność współdzielonych kluczy:",A.shared_key==B.shared_key)
-
-# serializacja kluczy - to robiłem jak się siłowałem z podpisami cyfrowymi
-A_private_key_serialized=A.private_key.private_bytes(encoding=serialization.Encoding.PEM,format=serialization.PrivateFormat.PKCS8,encryption_algorithm=serialization.NoEncryption())
