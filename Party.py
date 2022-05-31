@@ -10,7 +10,7 @@ class Party:
         self.private_key    = dsa.generate_private_key(key_size=1024)   # Generacja klucza prywatnego DSA
         self.identity       = self.private_key.public_key()             # Klucz publiczny DSA będzie tożsamością partii
         
-        self.identity_mac   = None      # MAC z tożsamości
+        self.identity_mac   = None  # MAC z tożsamości
 
         self.dh_secret      = parameters.generate_private_key() # x albo y     - generalnie "klucz prywatny" algorytmu Diffie-Hellmana
         self.dh_exponential = self.dh_secret.public_key()       # g^x albo g^y - generalnie "klucz publiczny" algorytmu Diffie-Hellmana
