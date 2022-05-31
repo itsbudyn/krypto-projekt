@@ -75,8 +75,8 @@ B=Party()
 B.opponent_dh_exponential   = A.dh_exponential  # Swój klucz DH publiczny
 
 # KROK 2 = B wysyła do A
-A.opponent_dh_exponential   = B.dh_exponential  # Swój klucz DH publiczny
-A.opponent_identity         = B.identity        # Swoją tożsamość (surową)
+A.opponent_dh_exponential   = B.dh_exponential  # B wysyła do A swój klucz DH publiczny
+A.opponent_identity         = B.identity        # B wysyła do A swoją tożsamość (surową)
 
 A.generateSharedKey()       # Ponieważ obie strony mają klucze publiczne DH przeciwnika i swoje prywatne
 B.generateSharedKey()       # wygenerują na podstawie nich klucz wspólny
@@ -93,8 +93,8 @@ print("Zgodność podpisu od B:",A.verifySignChallenge(A.opponent_identity))    
 print("Zgodność MAC wygenerowanego w A z odebranym od B:", A.verifyOpposingMAC())   # A sam wyliczy MAC i zweryfikuje z odebranym
 
 # KROK 3 = A wysyła do B
-B.opponent_identity     = A.identity       # Swoją tożsamość (surową)
-B.opponent_identity_mac = A.identity_mac   # Wyliczony MAC ze swojej tożsamości
+B.opponent_identity     = A.identity       # A wysyła do B swoją tożsamość (surową)
+B.opponent_identity_mac = A.identity_mac   # A wysyła do B wyliczony MAC ze swojej tożsamości
 
 A.generateSignChallenge()   # A wygeneruje dla B wyzwanie - podpis kluczy publicznych DH
 
