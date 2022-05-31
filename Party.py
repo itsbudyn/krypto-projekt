@@ -34,20 +34,20 @@ class Party:
     # Wynik = uzupełnia atrybut identity_mac
     def generateIdentityMAC(self):
         h = hmac.HMAC(self.shared_key,hashes.SHA256())
-        h.update(self.serializeRSAPublicKey(self.identity))
+        h.update(self.serializeDSAPublicKey(self.identity))
         self.identity_mac=h.finalize()
 
     # Wylicza MAC z tożsamości przeciwnika, i porównuje z odebranym MAC-iem
     # Wynik = boolean (True/False) zależny od równości MAC'ów
     def verifyOpposingMAC(self):
         h = hmac.HMAC(self.shared_key,hashes.SHA256())
-        h.update(self.serializeRSAPublicKey(self.opponent_identity))
+        h.update(self.serializeDSAPublicKey(self.opponent_identity))
         result = h.finalize()
         return self.opponent_identity_mac==result
 
     # Konwertuje klucz publiczny DSA na bytearray
     # Wynik = bytearray
-    def serializeRSAPublicKey(self,key:dsa.DSAPublicKey):
+    def serializeDSAPublicKey(self,key:dsa.DSAPublicKey):
         return key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo)
 
     # Konwertuje klucz publiczny DH na bytearray
