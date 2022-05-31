@@ -1,6 +1,7 @@
 from cryptography.hazmat.primitives import hashes, hmac, serialization
 from cryptography.hazmat.primitives.asymmetric import dh, dsa
 
+# parametry dla generatora kluczy Diffie-Hellmana
 parameters = dh.generate_parameters(generator=2, key_size=512)
 
 class Party:
