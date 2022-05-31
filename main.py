@@ -1,14 +1,13 @@
 from cryptography.hazmat.primitives import hashes, hmac, serialization
-from cryptography.hazmat.primitives.asymmetric import dh, rsa
+from cryptography.hazmat.primitives.asymmetric import dh, dsa
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
 parameters = dh.generate_parameters(generator=2, key_size=512)
-p=65537
 
 class Party:
     # konstruktor
     def __init__(self):
-        self.private_key    = rsa.generate_private_key(public_exponent=p, key_size=512)
+        self.private_key    = dsa.generate_private_key(key_size=1024)
         self.identity       = self.private_key.public_key()
         
         self.identity_mac   = None
@@ -18,9 +17,12 @@ class Party:
 
         self.shared_key     = None
 
+        self.sign_challenge = None
+
         self.opponent_dh_exponential= None
         self.opponent_identity      = None
         self.opponent_identity_mac  = None
+        self.opponent_sign_challenge= None
 
     # Jeżeli mamy klucz publiczny przeciwnika, generujemy z niego i z naszego prywatnego klucz współdzielony
     def generateSharedKey(self):
@@ -37,10 +39,22 @@ class Party:
         h = hmac.HMAC(self.shared_key,hashes.SHA256())
         h.update(self.serializeRSAPublicKey(self.opponent_identity))
         result = h.finalize()
-        print("Zgodność MAC wygenerowanego lokalnie z odebranym:",self.opponent_identity_mac==result)
+        return self.opponent_identity_mac==result
 
-    def serializeRSAPublicKey(self,key:rsa.RSAPublicKey):
+    def serializeRSAPublicKey(self,key:dsa.DSAPublicKey):
         return key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo)
+
+    def serializeDHExponent(self,key:dh.DHPublicKey):
+        return key.public_bytes(encoding=serialization.Encoding.PEM,format=serialization.PublicFormat.SubjectPublicKeyInfo)
+
+    def generateSignChallenge(self):
+        msg = self.serializeDHExponent(self.dh_exponential).decode() + self.serializeDHExponent(self.opponent_dh_exponential).decode()
+        self.sign_challenge = self.private_key.sign(msg.encode(), hashes.SHA256())
+
+    def verifySignChallenge(self, key:dsa.DSAPublicKey):
+        msg = self.serializeDHExponent(self.opponent_dh_exponential).decode() + self.serializeDHExponent(self.dh_exponential).decode()
+        key.verify(self.opponent_sign_challenge, msg.encode(), hashes.SHA256())
+        return True
 
 # Instancjowanie obiektów klasy Party jako partie A i B o podanych tożsamościach
 A=Party()
@@ -59,14 +73,23 @@ B.generateSharedKey()       # wygenerują na podstawie nich klucz współdzielon
 B.generateIdentityMAC()     # B wygeneruje MAC swojej tożsamości z klucza współdzielonego
 A.generateIdentityMAC()     # A wygeneruje MAC swojej tożsamości z klucza współdzielonego (nie jest potrzebne jeszcze w tym kroku)
 
+B.generateSignChallenge()
+
 A.opponent_identity_mac=B.identity_mac  # B wyśle do A swój MAC z tożsamości
-print("A sprawdzi teraz MAC z B")
-A.verifyOpposingMAC()                   # A sam wyliczy MAC i zweryfikuje z odebranym
+A.opponent_sign_challenge=B.sign_challenge
+
+print("Zgodność podpisu od B:",A.verifySignChallenge(A.opponent_identity))
+print("Zgodność MAC wygenerowanego w A z odebranym od B:", A.verifyOpposingMAC())    # A sam wyliczy MAC i zweryfikuje z odebranym
 
 # KROK 3 = A wysyła do B
 B.opponent_identity     = A.identity       # Swoją tożsamość (surową)
 B.opponent_identity_mac = A.identity_mac   # Swój MAC ze swojej tożsamości
-print("B sprawdzi teraz MAC z A")
-B.verifyOpposingMAC()
+
+A.generateSignChallenge()
+
+B.opponent_sign_challenge = A.sign_challenge
+
+print("Zgodność podpisu od A:",B.verifySignChallenge(B.opponent_identity))
+print("Zgodność MAC wygenerowanego w B z odebranym od A:", B.verifyOpposingMAC())
 
 print("Zgodność współdzielonych kluczy:",A.shared_key==B.shared_key)
