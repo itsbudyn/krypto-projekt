@@ -37,5 +37,5 @@ print("Zgodność MAC wygenerowanego w A z tym od B:\t", A.verifyOpposingMAC()) 
 print("Zgodność podpisu od A:\t\t\t\t",B.verifySignChallenge(B.opponent_identity))  # B zweryfikuje podpis od A
 print("Zgodność MAC wygenerowanego w B z tym od A:\t", B.verifyOpposingMAC())       # B sam wyliczy MAC i zweryfikuje z odebranym
 print("Zgodność współdzielonych kluczy:\t\t",A.shared_key==B.shared_key)            # Zostnie sprawdzona ostatecznie równość wyliczonych kluczy współdzielonych
-print("Jeżeli wszystkie 5 weryfikacje przebiegły pomyślnie - klucz współdzielony jest prawidłowy")
+print("Jeżeli wszystkie weryfikacje przebiegły pomyślnie - klucz współdzielony jest prawidłowy")
 # Jeżeli wszystkie linijki będą true, transmisja w protokole SIGMA się powiodła
