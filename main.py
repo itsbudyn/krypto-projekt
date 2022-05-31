@@ -1,13 +1,16 @@
-from cryptography.hazmat.primitives import hashes, hmac
+from cryptography.hazmat.primitives import hashes, hmac, serialization
 from cryptography.hazmat.primitives.asymmetric import dh, rsa
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
 parameters = dh.generate_parameters(generator=2, key_size=512)
+p=65537
 
 class Party:
     # konstruktor
-    def __init__(self,identity):
-        self.identity       = identity
+    def __init__(self):
+        self.private_key    = rsa.generate_private_key(public_exponent=p, key_size=512)
+        self.identity       = self.private_key.public_key()
+        
         self.identity_mac   = None
 
         self.dh_secret      = parameters.generate_private_key()
@@ -26,19 +29,22 @@ class Party:
     # Generuje swój MAC ze swojej tożsamości
     def generateIdentityMAC(self):
         h = hmac.HMAC(self.shared_key,hashes.SHA256())
-        h.update(bytearray(self.identity.encode()))
+        h.update(self.serializeRSAPublicKey(self.identity))
         self.identity_mac=h.finalize()
 
     # Wylicza MAC z danych przeciwnika, i porównuje z odebranym MAC-iem
     def verifyOpposingMAC(self):
         h = hmac.HMAC(self.shared_key,hashes.SHA256())
-        h.update(bytes(self.opponent_identity.encode()))
+        h.update(self.serializeRSAPublicKey(self.opponent_identity))
         result = h.finalize()
         print("Zgodność MAC wygenerowanego lokalnie z odebranym:",self.opponent_identity_mac==result)
 
+    def serializeRSAPublicKey(self,key:rsa.RSAPublicKey):
+        return key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo)
+
 # Instancjowanie obiektów klasy Party jako partie A i B o podanych tożsamościach
-A=Party("Alice")
-B=Party("Bob")
+A=Party()
+B=Party()
 
 # KROK 1 = A wysyła do B
 B.opponent_dh_exponential   = A.dh_exponential  # Swój klucz DH publiczny
