@@ -67,3 +67,5 @@ class Party:
         msg = self.serializeDHExponent(self.opponent_dh_exponential).decode() + self.serializeDHExponent(self.dh_exponential).decode()
         key.verify(self.opponent_sign_challenge, msg.encode(), hashes.SHA256())
         return True
+
+if __name__ == "__main__": print("Proszę uruchomić plik main.py")
