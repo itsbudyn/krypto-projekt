@@ -81,28 +81,27 @@ A.opponent_dh_exponential   = B.dh_exponential  # B wysyła do A swój klucz DH 
 A.opponent_identity         = B.identity        # B wysyła do A swoją tożsamość (surową)
 
 B.generateSignChallenge()   # B wygeneruje dla A wyzwanie - podpis kluczy publicznych DH
-A.opponent_sign_challenge=B.sign_challenge  # B wyśle do A wyzwanie podpisowe
+A.opponent_sign_challenge   = B.sign_challenge  # B wyśle do A wyzwanie podpisowe
 
-A.opponent_identity_mac=B.identity_mac      # B wyśle do A wyliczony MAC z tożsamości
-
-# PO KROKU 2 WYLICZENIE KLUCZA WSPÓLNEGO I MAC
+# WYLICZENIE KLUCZY WSPÓŁDZIELONYCH
 A.generateSharedKey()       # Ponieważ obie strony mają klucze publiczne DH przeciwnika i swoje prywatne
 B.generateSharedKey()       # wygenerują na podstawie nich klucz wspólny
 
 B.generateIdentityMAC()     # B wyliczy MAC swojej tożsamości z klucza współdzielonego
 A.generateIdentityMAC()     # A wyliczy MAC swojej tożsamości z klucza współdzielonego (nie jest potrzebne jeszcze w tym kroku)
+A.opponent_identity_mac     = B.identity_mac    # B wyśle do A wyliczony MAC z tożsamości
 
 # WERYFIKACJE ZGODNOŚCI
 print("Zgodność podpisu od B:",A.verifySignChallenge(A.opponent_identity))          # A zweryfikuje podpis od B
 print("Zgodność MAC wygenerowanego w A z odebranym od B:", A.verifyOpposingMAC())   # A sam wyliczy MAC i zweryfikuje z odebranym
 
 # KROK 3 = A wysyła do B
-B.opponent_identity     = A.identity       # A wysyła do B swoją tożsamość (surową)
+B.opponent_identity         = A.identity        # A wysyła do B swoją tożsamość (surową)
 
 A.generateSignChallenge()   # A wygeneruje dla B wyzwanie - podpis kluczy publicznych DH
-B.opponent_sign_challenge = A.sign_challenge    # A wyśle do B wyzwanie podpisowe
+B.opponent_sign_challenge   = A.sign_challenge  # A wyśle do B wyzwanie podpisowe
 
-B.opponent_identity_mac = A.identity_mac   # A wysyła do B wyliczony MAC ze swojej tożsamości
+B.opponent_identity_mac     = A.identity_mac    # A wysyła do B wyliczony MAC ze swojej tożsamości
 
 # WERYFIKACJE ZGODNOŚCI
 print("Zgodność podpisu od A:",B.verifySignChallenge(B.opponent_identity))          # B zweryfikuje podpis od A
